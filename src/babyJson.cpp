@@ -20,6 +20,13 @@ json::BabyJSON::ret_value json::BabyJSON::parse(std::string_view json)
                     return ret_value{ json::JSONType{ std::nullptr_t{} }, 0 };
           }
 
+          /*processing rubbish character in the front(space tab \n\r\t\v\f\0)*/
+          std::size_t pos = json.find_first_not_of(" \n\r\f\v\t\0");
+          if (pos!=0 && pos!=std::string::npos) {
+                    auto [value, processed] = parse(json.substr(pos));
+                    return ret_value{ json::JSONType{std::move(value)}, pos + processed };
+          }
+
           /*try to parse integer and floating point value*/
           else  if (std::isdigit(json[0]) || json[0] == '+' || json[0] == '-') 
           {
@@ -143,8 +150,6 @@ json::BabyJSON::ret_value json::BabyJSON::parse(std::string_view json)
                               else {
                                         i += processed_value_size;
                               }
-
-                              i += processed_value_size;
 
                               result.insert_or_assign(
                                         std::move(std::get<std::string>(json_key.inner_type)),

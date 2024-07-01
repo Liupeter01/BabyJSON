@@ -13,20 +13,23 @@ namespace json {
           enum Escape { OFF, ON };
 
           struct JSONType {
-                    using argument_type = std::variant<
-                              std::nullptr_t,                                                             //nothing
-                              bool,                                                                           //true, false
-                              int,                                                                              //18
-                              double,                                                                       //100.5;
-                              std::string,                                                                  //"female"
-                              std::vector<JSONType>,                                           //[18, "female"]
-                              std::unordered_map<std::string, JSONType>           //{"name":"alice", "info": [18, "female"]}
-                    >;
-                    argument_type inner_type;
+                    using JSONList = std::vector<JSONType>;
+                    using JSONDictonary = std::unordered_map<std::string, JSONType>;
+
+                    std::variant<
+                              std::nullptr_t,                //nothing
+                              bool,                            //true, false
+                              int,                                 //18
+                              double,                         //100.5;
+                              std::string,                   //"female"
+                              JSONList,                   //[18, "female"]
+                              JSONDictonary           //{"name":"alice", "info": [18, "female"]}
+                    > inner_type;
           };
 
           class BabyJSON {
                     using ret_value = std::pair<json::JSONType, std::size_t>;
+
           public:
                     ret_value parse(std::string_view json);
 
